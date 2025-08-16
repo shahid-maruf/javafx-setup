@@ -68,7 +68,7 @@ jobs:
             --name Trackivo ^
             --main-jar employee-tracking-system-1.0-SNAPSHOT-shaded.jar ^
             --main-class com.itrtechsystems.employeetrackingsystem.Main ^
-            --icon src\main\resources\com\itrtechsystems\employeetrackingsystem\images\icon\icon.ico ^
+            --icon resources\com\itrtechsystems\employeetrackingsystem\images\icon\icon.ico ^
             --app-version 1.1 ^
             --vendor "ITR Consulting" ^
             --win-menu ^
@@ -76,7 +76,7 @@ jobs:
             --install-dir Trackivo ^
             --runtime-image custom-runtime ^
             --java-options "-Dfile.encoding=UTF-8" ^
-            --license-file src\main\resources\com\itrtechsystems\employeetrackingsystem\text\LICENSE.txt
+            --license-file resources\com\itrtechsystems\employeetrackingsystem\text\LICENSE.txt
 
       # ---------------- macOS / Linux ----------------
       - name: Create Custom Runtime (macOS/Linux)
