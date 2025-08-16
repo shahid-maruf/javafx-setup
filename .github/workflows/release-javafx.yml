@@ -25,19 +25,15 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Download JavaFX JMODs
-        shell: bash
-        run: |
-          PLATFORM=$([[ "${{ matrix.os }}" == "windows-latest" ]] && echo "windows-x64" || ([[ "${{ matrix.os }}" == "macos-latest" ]] && echo "osx-x64" || echo "linux-x64"))
-          curl -L -o javafx-jmods.zip https://download2.gluonhq.com/openjfx/21.0.1/openjfx-21.0.1_${PLATFORM}_bin-jmods.zip
-          unzip javafx-jmods.zip
-          mv javafx-jmods-21.0.1 javafx-jmods
+      - name: Build project and copy dependencies
+        run: mvn clean package dependency:copy-dependencies
 
       - name: Prepare App Directory
         run: |
           mkdir -p target/app
           mkdir -p target/jpackage
-          cp employee-tracking-system-1.0-SNAPSHOT-shaded.jar target/app/main.jar
+          cp target/employee-tracking-system-1.0-SNAPSHOT-shaded.jar target/app/main.jar
+          cp target/dependency/*.jar target/app/
 
       # ---------------- WINDOWS ----------------
       - name: Create Custom Runtime (Windows)
