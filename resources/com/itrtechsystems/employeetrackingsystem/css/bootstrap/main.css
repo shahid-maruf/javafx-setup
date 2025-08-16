@@ -1,0 +1,15 @@
+/* Load the custom font */
+@font-face {
+    font-family: "BarlowCondensed";
+    src: url("../../fonts/BarlowCondensed-Medium.ttf") format("truetype");
+}
+
+/* Apply the custom font to the entire application */
+.root {
+    -fx-font-family: "BarlowCondensed";
+}
+
+.label {
+    -fx-text-fill: #fbfbfb;
+}
+
