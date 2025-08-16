@@ -128,7 +128,7 @@
             <artifactId>junique</artifactId>
             <version>1.0.4</version>
             <scope>system</scope>
-            <systemPath>libs/junique-1.0.4.jar</systemPath>
+            <systemPath>${project.basedir}/libs/junique-1.0.4.jar</systemPath>
         </dependency>
     </dependencies>
 
