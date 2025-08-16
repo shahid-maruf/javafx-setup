@@ -40,7 +40,7 @@ jobs:
           mkdir -p target/app
           mkdir -p target/jpackage
           cp employee-tracking-system-1.0-SNAPSHOT-shaded.jar target/app/
-          cp dependencies/*.jar target/app/ || true
+        #  cp dependencies/*.jar target/app/ || true
 
       # ---------------- WINDOWS ----------------
       - name: Create Custom Runtime (Windows)
