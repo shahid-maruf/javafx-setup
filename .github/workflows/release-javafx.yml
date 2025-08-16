@@ -31,7 +31,7 @@ jobs:
         run: |
           mkdir -p target/app
           mkdir -p target/jpackage
-          cp main.jar target/app/
+          cp employee-tracking-system-1.0-SNAPSHOT-shaded.jar target/app/
           cp dependencies/*.jar target/app/ || true
 
       # ---------------- WINDOWS ----------------
@@ -58,7 +58,7 @@ jobs:
             --input target\app ^
             --dest target\jpackage ^
             --name Trackivo ^
-            --main-jar main.jar ^
+            --main-jar employee-tracking-system-1.0-SNAPSHOT-shaded.jar ^
             --main-class com.itrtechsystems.employeetrackingsystem.Main ^
             --icon src\main\resources\com\itrtechsystems\employeetrackingsystem\images\icon\icon.ico ^
             --app-version 1.1 ^
@@ -94,7 +94,7 @@ jobs:
             --input target/app \
             --dest target/jpackage \
             --name Trackivo \
-            --main-jar main.jar \
+            --main-jar employee-tracking-system-1.0-SNAPSHOT-shaded.jar \
             --main-class com.itrtechsystems.employeetrackingsystem.Main \
             --icon src/main/resources/com/itrtechsystems/employeetrackingsystem/images/icon/mac-icon.icns \
             --app-version 1.1 \
@@ -113,7 +113,7 @@ jobs:
             --input target/app \
             --dest target/jpackage \
             --name Trackivo \
-            --main-jar main.jar \
+            --main-jar employee-tracking-system-1.0-SNAPSHOT-shaded.jar \
             --main-class com.itrtechsystems.employeetrackingsystem.Main \
             --icon src/main/resources/com/itrtechsystems/employeetrackingsystem/images/icon/favicon-itr-logo.png \
             --app-version 1.1 \
