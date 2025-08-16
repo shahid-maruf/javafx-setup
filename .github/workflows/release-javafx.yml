@@ -104,7 +104,7 @@ jobs:
             --name Trackivo \
             --main-jar employee-tracking-system-1.0-SNAPSHOT-shaded.jar \
             --main-class com.itrtechsystems.employeetrackingsystem.Main \
-            --icon src/main/resources/com/itrtechsystems/employeetrackingsystem/images/icon/mac-icon.icns \
+            --icon resources/com/itrtechsystems/employeetrackingsystem/images/icon/mac-icon.icns \
             --app-version 1.1 \
             --vendor "ITR Consulting" \
             --runtime-image custom-runtime \
@@ -123,7 +123,7 @@ jobs:
             --name Trackivo \
             --main-jar employee-tracking-system-1.0-SNAPSHOT-shaded.jar \
             --main-class com.itrtechsystems.employeetrackingsystem.Main \
-            --icon src/main/resources/com/itrtechsystems/employeetrackingsystem/images/icon/favicon-itr-logo.png \
+            --icon resources/com/itrtechsystems/employeetrackingsystem/images/icon/favicon-itr-logo.png \
             --app-version 1.1 \
             --vendor "ITR Consulting" \
             --runtime-image custom-runtime \
