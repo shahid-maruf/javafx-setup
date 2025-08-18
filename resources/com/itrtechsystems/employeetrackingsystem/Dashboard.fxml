@@ -39,7 +39,7 @@
                      </styleClass>
                   </Label>
                   <Pane maxHeight="-Infinity" prefHeight="2.0" styleClass="line-color" stylesheets="@css/style.css" HBox.hgrow="ALWAYS" />
-                  <Label id="timmer" alignment="CENTER" prefHeight="41.0" prefWidth="94.0" text="00:00:00" textFill="#ffd6dc">
+                  <Label id="timmer" fx:id="clockDisplay" alignment="CENTER" prefHeight="41.0" prefWidth="94.0" text="00:00:00" textFill="#ffd6dc">
                      <font>
                         <Font name="Barlow Condensed Medium" size="25.0" />
                      </font>
