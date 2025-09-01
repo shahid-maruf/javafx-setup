@@ -1,0 +1,42 @@
+/* Style for Medium Screens (Laptop, 1366px to 1919px) */
+.lg-label {
+    -fx-font-size: 18px;
+}
+
+.md-label {
+    -fx-font-size: 16px;
+}
+
+.app-title-name {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.version-label {
+    -fx-font-size: 12px;
+}
+
+.selected-button-container {
+    -fx-spacing: 10px;
+    -fx-padding: 8px 8px;
+}
+
+.icon {
+    -fx-fit-width: 25px;   /* Fit the image width to 200px */
+    -fx-fit-height: 25px;  /* Fit the image height to 150px */
+    -fx-preserve-ratio: true;
+}
+
+.profile-pic {
+    -fx-fit-width: 80px;   /* Fit the image width to 200px */
+    -fx-fit-height: 80px;  /* Fit the image height to 150px */
+    -fx-preserve-ratio: true;
+}
+
+.button {
+    -fx-font-size: 14;
+}
+
+.separater {
+    -fx-pref-height: 110px;
+}

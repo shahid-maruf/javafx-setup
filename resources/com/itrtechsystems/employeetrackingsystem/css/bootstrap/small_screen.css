@@ -1,0 +1,60 @@
+/* Style for Small Screens (Tablets, Small Laptops, <= 1365px) */
+.lg-label {
+    -fx-font-size: 16px;
+}
+
+.md-label {
+    -fx-font-size: 13px;
+}
+
+
+.app-title-name {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.version-label {
+    -fx-font-size: 10px;
+}
+
+.selected-button-container {
+    -fx-spacing: 9px;
+    -fx-padding: 5px 5px;
+}
+
+.icon {
+    -fx-pref-width: 17px;  /* Set the preferred width */
+    -fx-pref-height: 17px; /* Set the preferred height */
+}
+
+.icon {
+    -fx-fit-width: 25px;   /* Fit the image width to 200px */
+    -fx-fit-height: 25px;  /* Fit the image height to 150px */
+    -fx-preserve-ratio: true;
+}
+
+.profile-pic {
+    -fx-fit-width: 55px;   /* Fit the image width to 200px */
+    -fx-fit-height: 55px;  /* Fit the image height to 150px */
+    -fx-preserve-ratio: true;
+}
+
+.graphs {
+        -fx-pref-height: 450px;
+}
+
+.button {
+    -fx-font-size: 11px;
+}
+
+.separater {
+    -fx-pref-height: 80px;
+}
+
+.vbox-spacing {
+    -fx-spacing: 5; /* vertical gap between children in VBox */
+}
+
+.profile-info {
+    -fx-pref-height: 90px;
+}
