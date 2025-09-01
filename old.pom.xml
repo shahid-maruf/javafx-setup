@@ -121,6 +121,15 @@
             <artifactId>javafx-media</artifactId>
             <version>21</version>
         </dependency>
+
+        <!-- Local JAR (junique) -->
+        <dependency>
+            <groupId>com.melloware</groupId>
+            <artifactId>junique</artifactId>
+            <version>1.0.4</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/junique-1.0.4.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <build>
@@ -202,7 +211,28 @@
                     </execution>
                 </executions>
             </plugin>
-
+ 
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-shade-plugin</artifactId>
+      <version>3.5.0</version>
+      <executions>
+        <execution>
+          <phase>package</phase>
+          <goals>
+            <goal>shade</goal>
+          </goals>
+          <configuration>
+            <createDependencyReducedPom>false</createDependencyReducedPom>
+            <transformers>
+              <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                <mainClass>com.itrtechsystems.employeetrackingsystem.Main</mainClass>
+              </transformer>
+            </transformers>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin> 
         </plugins>
 
     </build>
