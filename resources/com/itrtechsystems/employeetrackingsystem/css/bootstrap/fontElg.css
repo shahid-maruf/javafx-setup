@@ -1,0 +1,16 @@
+.label {
+
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-wrap-text: true;
+}
+
+.button{
+    -fx-background-color: #1A9A62;
+    -fx-font: 16px "Calibri";
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+    -fx-graphic-text-gap: 8;
+
+}
+
