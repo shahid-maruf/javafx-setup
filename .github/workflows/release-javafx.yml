@@ -121,7 +121,7 @@ jobs:
             --java-options "-Dfile.encoding=UTF-8" ^
             --license-file resources\com\itrtechsystems\employeetrackingsystem\text\LICENSE.txt ^
             --resource-dir target\updater ^
-            --class-path target\app\*.jar
+            -class-path target\app\*.jar
 
       # ---------------- macOS / Linux ----------------
       - name: Create Custom Runtime (macOS/Linux)
@@ -155,7 +155,7 @@ jobs:
             --runtime-image custom-runtime \
             --java-options "-Dfile.encoding=UTF-8" \
             --resource-dir target/updater \
-            --class-path target/app/*.jar
+            -class-path target/app/*.jar
 
       - name: Create Linux Installer (DEB)
         if: matrix.os == 'ubuntu-latest'
@@ -176,7 +176,7 @@ jobs:
             --runtime-image custom-runtime \
             --java-options "-Dfile.encoding=UTF-8" \
             --resource-dir target/updater \
-            --class-path target/app/*.jar
+            -class-path target/app/*.jar
 
       - name: Upload OS-specific artifact
         uses: actions/upload-artifact@v4
