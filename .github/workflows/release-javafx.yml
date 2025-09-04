@@ -25,8 +25,8 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Build project with modules
-        run: mvn clean package
+      - name: Build project and copy dependencies
+        run: mvn clean package dependency:copy-dependencies
 
       - name: Prepare App Directory
         run: |
@@ -34,8 +34,13 @@ jobs:
           mkdir -p target/jpackage
           mkdir -p target/updater
           cp target/*.jar target/app/
-          cp target/dependency/*.jar target/app/
+          # Copy dependencies if they exist
+          if [ -d "target/dependency" ]; then
+            cp target/dependency/*.jar target/app/ 2>/dev/null || true
+          fi
           cp UpdaterTrackivo.jar target/updater/UpdaterTrackivo.jar
+
+      # ... rest of your workflow remains the same ...
 
       # ---------------- WINDOWS ----------------
       - name: Create Custom Runtime (Windows)
