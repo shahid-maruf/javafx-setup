@@ -6,7 +6,7 @@ on:
     tags: [ "v*.*.*" ]
 
 permissions:
-  contents: write  # Required for release creation
+  contents: write
 
 jobs:
   build:
@@ -25,17 +25,16 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Build project and copy dependencies
-        run: mvn clean package dependency:copy-dependencies
+      - name: Build project with modules
+        run: mvn clean package
 
       - name: Prepare App Directory
         run: |
           mkdir -p target/app
           mkdir -p target/jpackage
-          mkdir -p target/updater  # Create separate directory for updater
-          cp main.jar target/app/main.jar
+          mkdir -p target/updater
+          cp target/*.jar target/app/
           cp target/dependency/*.jar target/app/
-          # Copy updater jar to separate location (outside app directory)
           cp UpdaterTrackivo.jar target/updater/UpdaterTrackivo.jar
 
       # ---------------- WINDOWS ----------------
@@ -45,8 +44,8 @@ jobs:
         run: |
           if exist custom-runtime rmdir /s /q custom-runtime
           jlink ^
-            --module-path "%JAVA_HOME%\jmods;target\app;javafx-jmods" ^
-            --add-modules java.base,java.logging,java.net.http,javafx.controls,javafx.fxml,javafx.media,javafx.graphics,jdk.unsupported,jdk.crypto.ec ^
+            --module-path "%JAVA_HOME%\jmods;target\app" ^
+            --add-modules com.itrtechsystems.employeetrackingsystem,java.base,java.logging,java.net.http,javafx.controls,javafx.fxml,javafx.media,javafx.graphics,jdk.unsupported,jdk.crypto.ec ^
             --output custom-runtime ^
             --strip-debug ^
             --compress 2 ^
@@ -82,8 +81,8 @@ jobs:
         run: |
           rm -rf custom-runtime
           jlink \
-            --module-path "$JAVA_HOME/jmods:target/app:javafx-jmods" \
-            --add-modules java.base,java.logging,java.net.http,javafx.controls,javafx.fxml,javafx.media,javafx.graphics,jdk.unsupported,jdk.crypto.ec \
+            --module-path "$JAVA_HOME/jmods:target/app" \
+            --add-modules com.itrtechsystems.employeetrackingsystem,java.base,java.logging,java.net.http,javafx.controls,javafx.fxml,javafx.media,javafx.graphics,jdk.unsupported,jdk.crypto.ec \
             --output custom-runtime \
             --strip-debug \
             --compress 2 \
