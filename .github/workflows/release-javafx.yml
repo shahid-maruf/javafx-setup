@@ -25,28 +25,56 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Download JavaFX jmods
+      # ---------------- WINDOWS -----------------
+      - name: Download JavaFX jmods (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: cmd
         run: |
-          # Download JavaFX jmods based on OS and architecture
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            curl -L -o javafx-jmods.zip https://download2.gluonhq.com/openjfx/21.0.8/openjfx-21.0.8_windows-x64_bin-jmods.zip
-          elif [ "$RUNNER_OS" == "macOS" ]; then
-            if [ "$(uname -m)" == "arm64" ]; then
-              curl -L -o javafx-jmods.zip https://download2.gluonhq.com/openjfx/21.0.8/openjfx-21.0.8_osx-aarch64_bin-jmods.zip
-            else
-              curl -L -o javafx-jmods.zip https://download2.gluonhq.com/openjfx/21.0.8/openjfx-21.0.8_osx-x64_bin-jmods.zip
-            fi
+          curl -L -o javafx-jmods.zip https://download2.gluonhq.com/openjfx/21.0.8/openjfx-21.0.8_windows-x64_bin-jmods.zip
+          tar -xf javafx-jmods.zip
+          ren javafx-jmods-21.0.8 javafx-jmods
+
+      # ---------------- macOS -----------------
+      - name: Download JavaFX jmods (macOS)
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: |
+          if [ "$(uname -m)" == "arm64" ]; then
+            curl -L -o javafx-jmods.zip https://download2.gluonhq.com/openjfx/21.0.8/openjfx-21.0.8_osx-aarch64_bin-jmods.zip
           else
-            # Linux
-            curl -L -o javafx-jmods.zip https://download2.gluonhq.com/openjfx/21.0.8/openjfx-21.0.8_linux-x64_bin-jmods.zip
+            curl -L -o javafx-jmods.zip https://download2.gluonhq.com/openjfx/21.0.8/openjfx-21.0.8_osx-x64_bin-jmods.zip
           fi
+          unzip javafx-jmods.zip
+          mv javafx-jmods-21.0.8 javafx-jmods
+
+      # ---------------- Linux -----------------
+      - name: Download JavaFX jmods (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash
+        run: |
+          curl -L -o javafx-jmods.zip https://download2.gluonhq.com/openjfx/21.0.8/openjfx-21.0.8_linux-x64_bin-jmods.zip
           unzip javafx-jmods.zip
           mv javafx-jmods-21.0.8 javafx-jmods
 
       - name: Build project and copy dependencies
         run: mvn clean package dependency:copy-dependencies
 
-      - name: Prepare App Directory
+      # ---------------- WINDOWS -----------------
+      - name: Prepare App Directory (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: cmd
+        run: |
+          mkdir target\app
+          mkdir target\jpackage
+          mkdir target\updater
+          copy target\*.jar target\app\
+          if exist target\dependency copy target\dependency\*.jar target\app\
+          copy UpdaterTrackivo.jar target\updater\UpdaterTrackivo.jar
+
+      # ---------------- macOS / Linux -----------------
+      - name: Prepare App Directory (Unix)
+        if: matrix.os != 'windows-latest'
+        shell: bash
         run: |
           mkdir -p target/app
           mkdir -p target/jpackage
