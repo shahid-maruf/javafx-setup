@@ -32,8 +32,11 @@ jobs:
         run: |
           mkdir -p target/app
           mkdir -p target/jpackage
-          cp employee-tracking-system-1.0-SNAPSHOT-shaded.jar target/app/main.jar
+          mkdir -p target/updater  # Create separate directory for updater
+          cp main.jar target/app/main.jar
           cp target/dependency/*.jar target/app/
+          # Copy updater jar to separate location (outside app directory)
+          cp UpdaterTrackivo.jar target/updater/UpdaterTrackivo.jar
 
       # ---------------- WINDOWS ----------------
       - name: Create Custom Runtime (Windows)

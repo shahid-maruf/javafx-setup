@@ -1,0 +1,148 @@
+name: JavaFX Native Release
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ "v*.*.*" ]
+
+permissions:
+  contents: write  # Required for release creation
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Build project and copy dependencies
+        run: mvn clean package dependency:copy-dependencies
+
+      - name: Prepare App Directory
+        run: |
+          mkdir -p target/app
+          mkdir -p target/jpackage
+          cp main.jar target/app/main.jar
+          cp target/dependency/*.jar target/app/
+
+      # ---------------- WINDOWS ----------------
+      - name: Create Custom Runtime (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: cmd
+        run: |
+          if exist custom-runtime rmdir /s /q custom-runtime
+          jlink ^
+            --module-path "%JAVA_HOME%\jmods;target\app;javafx-jmods" ^
+            --add-modules java.base,java.logging,java.net.http,javafx.controls,javafx.fxml,javafx.media,javafx.graphics,jdk.unsupported,jdk.crypto.ec ^
+            --output custom-runtime ^
+            --strip-debug ^
+            --compress 2 ^
+            --no-header-files ^
+            --no-man-pages
+
+      - name: Create Windows Installer (MSI)
+        if: matrix.os == 'windows-latest'
+        shell: cmd
+        run: |
+          jpackage ^
+            --type msi ^
+            --input target\app ^
+            --dest target\jpackage ^
+            --name Trackivo ^
+            --main-jar main.jar ^
+            --main-class com.itrtechsystems.employeetrackingsystem.Main ^
+            --icon resources\com\itrtechsystems\employeetrackingsystem\images\icon\icon.ico ^
+            --app-version 1.1 ^
+            --vendor "ITR Consulting" ^
+            --win-menu ^
+            --win-shortcut ^
+            --install-dir Trackivo ^
+            --runtime-image custom-runtime ^
+            --java-options "-Dfile.encoding=UTF-8" ^
+            --license-file resources\com\itrtechsystems\employeetrackingsystem\text\LICENSE.txt
+
+      # ---------------- macOS / Linux ----------------
+      - name: Create Custom Runtime (macOS/Linux)
+        if: matrix.os != 'windows-latest'
+        shell: bash
+        run: |
+          rm -rf custom-runtime
+          jlink \
+            --module-path "$JAVA_HOME/jmods:target/app:javafx-jmods" \
+            --add-modules java.base,java.logging,java.net.http,javafx.controls,javafx.fxml,javafx.media,javafx.graphics,jdk.unsupported,jdk.crypto.ec \
+            --output custom-runtime \
+            --strip-debug \
+            --compress 2 \
+            --no-header-files \
+            --no-man-pages
+
+      - name: Create macOS Installer (DMG)
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: |
+          jpackage \
+            --type dmg \
+            --input target/app \
+            --dest target/jpackage \
+            --name Trackivo \
+            --main-jar main.jar \
+            --main-class com.itrtechsystems.employeetrackingsystem.Main \
+            --icon resources/com/itrtechsystems/employeetrackingsystem/images/icon/mac-icon.icns \
+            --app-version 1.1 \
+            --vendor "ITR Consulting" \
+            --runtime-image custom-runtime \
+            --java-options "-Dfile.encoding=UTF-8"
+
+      - name: Create Linux Installer (DEB)
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fakeroot
+          jpackage \
+            --type deb \
+            --input target/app \
+            --dest target/jpackage \
+            --name Trackivo \
+            --main-jar main.jar \
+            --main-class com.itrtechsystems.employeetrackingsystem.Main \
+            --icon resources/com/itrtechsystems/employeetrackingsystem/images/icon/favicon-itr-logo.png \
+            --app-version 1.1 \
+            --vendor "ITR Consulting" \
+            --runtime-image custom-runtime \
+            --java-options "-Dfile.encoding=UTF-8"
+
+      - name: Upload OS-specific artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: installers-${{ matrix.os }}
+          path: target/jpackage/*
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-files
+
+      - name: List downloaded installers
+        run: ls -R release-files
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: release-files/**/*
