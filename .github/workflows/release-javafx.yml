@@ -34,13 +34,10 @@ jobs:
           mkdir -p target/jpackage
           mkdir -p target/updater
           cp target/*.jar target/app/
-          # Copy dependencies if they exist
           if [ -d "target/dependency" ]; then
             cp target/dependency/*.jar target/app/ 2>/dev/null || true
           fi
           cp UpdaterTrackivo.jar target/updater/UpdaterTrackivo.jar
-
-      # ... rest of your workflow remains the same ...
 
       # ---------------- WINDOWS ----------------
       - name: Create Custom Runtime (Windows)
@@ -49,8 +46,8 @@ jobs:
         run: |
           if exist custom-runtime rmdir /s /q custom-runtime
           jlink ^
-            --module-path "%JAVA_HOME%\jmods;target\app" ^
-            --add-modules com.itrtechsystems.employeetrackingsystem,java.base,java.logging,java.net.http,javafx.controls,javafx.fxml,javafx.media,javafx.graphics,jdk.unsupported,jdk.crypto.ec ^
+            --module-path "%JAVA_HOME%\jmods" ^
+            --add-modules java.base,java.logging,java.net.http,javafx.controls,javafx.fxml,javafx.media,javafx.graphics,jdk.unsupported,jdk.crypto.ec ^
             --output custom-runtime ^
             --strip-debug ^
             --compress 2 ^
@@ -77,7 +74,8 @@ jobs:
             --runtime-image custom-runtime ^
             --java-options "-Dfile.encoding=UTF-8" ^
             --license-file resources\com\itrtechsystems\employeetrackingsystem\text\LICENSE.txt ^
-            --resource-dir target\updater
+            --resource-dir target\updater ^
+            --class-path target\app\*.jar
 
       # ---------------- macOS / Linux ----------------
       - name: Create Custom Runtime (macOS/Linux)
@@ -86,8 +84,8 @@ jobs:
         run: |
           rm -rf custom-runtime
           jlink \
-            --module-path "$JAVA_HOME/jmods:target/app" \
-            --add-modules com.itrtechsystems.employeetrackingsystem,java.base,java.logging,java.net.http,javafx.controls,javafx.fxml,javafx.media,javafx.graphics,jdk.unsupported,jdk.crypto.ec \
+            --module-path "$JAVA_HOME/jmods" \
+            --add-modules java.base,java.logging,java.net.http,javafx.controls,javafx.fxml,javafx.media,javafx.graphics,jdk.unsupported,jdk.crypto.ec \
             --output custom-runtime \
             --strip-debug \
             --compress 2 \
@@ -110,7 +108,8 @@ jobs:
             --vendor "ITR Consulting" \
             --runtime-image custom-runtime \
             --java-options "-Dfile.encoding=UTF-8" \
-            --resource-dir target/updater
+            --resource-dir target/updater \
+            --class-path target/app/*.jar
 
       - name: Create Linux Installer (DEB)
         if: matrix.os == 'ubuntu-latest'
@@ -130,7 +129,8 @@ jobs:
             --vendor "ITR Consulting" \
             --runtime-image custom-runtime \
             --java-options "-Dfile.encoding=UTF-8" \
-            --resource-dir target/updater
+            --resource-dir target/updater \
+            --class-path target/app/*.jar
 
       - name: Upload OS-specific artifact
         uses: actions/upload-artifact@v4
