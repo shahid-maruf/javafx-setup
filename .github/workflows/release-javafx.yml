@@ -25,6 +25,24 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
+      - name: Download JavaFX jmods
+        run: |
+          # Download JavaFX jmods based on OS and architecture
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            curl -L -o javafx-jmods.zip https://download2.gluonhq.com/openjfx/21.0.8/openjfx-21.0.8_windows-x64_bin-jmods.zip
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            if [ "$(uname -m)" == "arm64" ]; then
+              curl -L -o javafx-jmods.zip https://download2.gluonhq.com/openjfx/21.0.8/openjfx-21.0.8_osx-aarch64_bin-jmods.zip
+            else
+              curl -L -o javafx-jmods.zip https://download2.gluonhq.com/openjfx/21.0.8/openjfx-21.0.8_osx-x64_bin-jmods.zip
+            fi
+          else
+            # Linux
+            curl -L -o javafx-jmods.zip https://download2.gluonhq.com/openjfx/21.0.8/openjfx-21.0.8_linux-x64_bin-jmods.zip
+          fi
+          unzip javafx-jmods.zip
+          mv javafx-jmods-21.0.8 javafx-jmods
+
       - name: Build project and copy dependencies
         run: mvn clean package dependency:copy-dependencies
 
@@ -46,7 +64,7 @@ jobs:
         run: |
           if exist custom-runtime rmdir /s /q custom-runtime
           jlink ^
-            --module-path "%JAVA_HOME%\jmods" ^
+            --module-path "%JAVA_HOME%\jmods;javafx-jmods" ^
             --add-modules java.base,java.logging,java.net.http,javafx.controls,javafx.fxml,javafx.media,javafx.graphics,jdk.unsupported,jdk.crypto.ec ^
             --output custom-runtime ^
             --strip-debug ^
@@ -84,7 +102,7 @@ jobs:
         run: |
           rm -rf custom-runtime
           jlink \
-            --module-path "$JAVA_HOME/jmods" \
+            --module-path "$JAVA_HOME/jmods:javafx-jmods" \
             --add-modules java.base,java.logging,java.net.http,javafx.controls,javafx.fxml,javafx.media,javafx.graphics,jdk.unsupported,jdk.crypto.ec \
             --output custom-runtime \
             --strip-debug \
