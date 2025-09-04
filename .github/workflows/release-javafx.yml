@@ -6,7 +6,7 @@ on:
     tags: [ "v*.*.*" ]
 
 permissions:
-  contents: write
+  contents: write  # Required for release creation
 
 jobs:
   build:
@@ -25,65 +25,15 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      # ---------------- WINDOWS -----------------
-      - name: Download JavaFX jmods (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: cmd
-        run: |
-          curl -L -o javafx-jmods.zip https://download2.gluonhq.com/openjfx/21.0.8/openjfx-21.0.8_windows-x64_bin-jmods.zip
-          tar -xf javafx-jmods.zip
-          ren javafx-jmods-21.0.8 javafx-jmods
-
-      # ---------------- macOS -----------------
-      - name: Download JavaFX jmods (macOS)
-        if: matrix.os == 'macos-latest'
-        shell: bash
-        run: |
-          if [ "$(uname -m)" == "arm64" ]; then
-            curl -L -o javafx-jmods.zip https://download2.gluonhq.com/openjfx/21.0.8/openjfx-21.0.8_osx-aarch64_bin-jmods.zip
-          else
-            curl -L -o javafx-jmods.zip https://download2.gluonhq.com/openjfx/21.0.8/openjfx-21.0.8_osx-x64_bin-jmods.zip
-          fi
-          unzip javafx-jmods.zip
-          mv javafx-jmods-21.0.8 javafx-jmods
-
-      # ---------------- Linux -----------------
-      - name: Download JavaFX jmods (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        shell: bash
-        run: |
-          curl -L -o javafx-jmods.zip https://download2.gluonhq.com/openjfx/21.0.8/openjfx-21.0.8_linux-x64_bin-jmods.zip
-          unzip javafx-jmods.zip
-          mv javafx-jmods-21.0.8 javafx-jmods
-
       - name: Build project and copy dependencies
         run: mvn clean package dependency:copy-dependencies
 
-      # ---------------- WINDOWS -----------------
-      - name: Prepare App Directory (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: cmd
-        run: |
-          mkdir target\app
-          mkdir target\jpackage
-          mkdir target\updater
-          copy target\*.jar target\app\
-          if exist target\dependency copy target\dependency\*.jar target\app\
-          copy UpdaterTrackivo.jar target\updater\UpdaterTrackivo.jar
-
-      # ---------------- macOS / Linux -----------------
-      - name: Prepare App Directory (Unix)
-        if: matrix.os != 'windows-latest'
-        shell: bash
+      - name: Prepare App Directory
         run: |
           mkdir -p target/app
           mkdir -p target/jpackage
-          mkdir -p target/updater
-          cp target/*.jar target/app/
-          if [ -d "target/dependency" ]; then
-            cp target/dependency/*.jar target/app/ 2>/dev/null || true
-          fi
-          cp UpdaterTrackivo.jar target/updater/UpdaterTrackivo.jar
+          cp main.jar target/app/main.jar
+          cp target/dependency/*.jar target/app/
 
       # ---------------- WINDOWS ----------------
       - name: Create Custom Runtime (Windows)
@@ -92,7 +42,7 @@ jobs:
         run: |
           if exist custom-runtime rmdir /s /q custom-runtime
           jlink ^
-            --module-path "%JAVA_HOME%\jmods;javafx-jmods" ^
+            --module-path "%JAVA_HOME%\jmods;target\app;javafx-jmods" ^
             --add-modules java.base,java.logging,java.net.http,javafx.controls,javafx.fxml,javafx.media,javafx.graphics,jdk.unsupported,jdk.crypto.ec ^
             --output custom-runtime ^
             --strip-debug ^
@@ -119,9 +69,7 @@ jobs:
             --install-dir Trackivo ^
             --runtime-image custom-runtime ^
             --java-options "-Dfile.encoding=UTF-8" ^
-            --license-file resources\com\itrtechsystems\employeetrackingsystem\text\LICENSE.txt ^
-            --resource-dir target\updater ^
-            -class-path target\app\*.jar
+            --license-file resources\com\itrtechsystems\employeetrackingsystem\text\LICENSE.txt
 
       # ---------------- macOS / Linux ----------------
       - name: Create Custom Runtime (macOS/Linux)
@@ -130,7 +78,7 @@ jobs:
         run: |
           rm -rf custom-runtime
           jlink \
-            --module-path "$JAVA_HOME/jmods:javafx-jmods" \
+            --module-path "$JAVA_HOME/jmods:target/app:javafx-jmods" \
             --add-modules java.base,java.logging,java.net.http,javafx.controls,javafx.fxml,javafx.media,javafx.graphics,jdk.unsupported,jdk.crypto.ec \
             --output custom-runtime \
             --strip-debug \
@@ -153,9 +101,7 @@ jobs:
             --app-version 1.1 \
             --vendor "ITR Consulting" \
             --runtime-image custom-runtime \
-            --java-options "-Dfile.encoding=UTF-8" \
-            --resource-dir target/updater \
-            -class-path target/app/*.jar
+            --java-options "-Dfile.encoding=UTF-8"
 
       - name: Create Linux Installer (DEB)
         if: matrix.os == 'ubuntu-latest'
@@ -174,9 +120,7 @@ jobs:
             --app-version 1.1 \
             --vendor "ITR Consulting" \
             --runtime-image custom-runtime \
-            --java-options "-Dfile.encoding=UTF-8" \
-            --resource-dir target/updater \
-            -class-path target/app/*.jar
+            --java-options "-Dfile.encoding=UTF-8"
 
       - name: Upload OS-specific artifact
         uses: actions/upload-artifact@v4
