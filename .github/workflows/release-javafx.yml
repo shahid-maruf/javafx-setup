@@ -72,7 +72,8 @@ jobs:
             --install-dir Trackivo ^
             --runtime-image custom-runtime ^
             --java-options "-Dfile.encoding=UTF-8" ^
-            --license-file resources\com\itrtechsystems\employeetrackingsystem\text\LICENSE.txt
+            --license-file resources\com\itrtechsystems\employeetrackingsystem\text\LICENSE.txt ^
+            --resource-dir target\updater
 
       # ---------------- macOS / Linux ----------------
       - name: Create Custom Runtime (macOS/Linux)
@@ -104,7 +105,8 @@ jobs:
             --app-version 1.1 \
             --vendor "ITR Consulting" \
             --runtime-image custom-runtime \
-            --java-options "-Dfile.encoding=UTF-8"
+            --java-options "-Dfile.encoding=UTF-8" \
+            --resource-dir target/updater
 
       - name: Create Linux Installer (DEB)
         if: matrix.os == 'ubuntu-latest'
@@ -123,7 +125,8 @@ jobs:
             --app-version 1.1 \
             --vendor "ITR Consulting" \
             --runtime-image custom-runtime \
-            --java-options "-Dfile.encoding=UTF-8"
+            --java-options "-Dfile.encoding=UTF-8" \
+            --resource-dir target/updater
 
       - name: Upload OS-specific artifact
         uses: actions/upload-artifact@v4
