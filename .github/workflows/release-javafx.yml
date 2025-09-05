@@ -151,24 +151,17 @@ jobs:
 
       - name: Create app.zip (excluding UpdaterTrackivo.jar)
         run: |
-          # Find the app directory and copy files to a temp location
+          # Find the first directory containing main.jar
           APP_DIR=$(find release-files -name "main.jar" -exec dirname {} \; | head -1)
-          echo "Using app files from: $APP_DIR"
+          echo "Creating app.zip from: $APP_DIR"
           
-          # Create a temporary directory for zip contents
-          mkdir -p temp_zip
-          cp -r "$APP_DIR"/* temp_zip/
+          # Change to the app directory and create zip
+          cd "$APP_DIR"
+          zip -r ../../../app.zip ./* -x "UpdaterTrackivo.jar"
           
-          # Remove UpdaterTrackivo.jar from temp directory
-          rm -f temp_zip/UpdaterTrackivo.jar
-          
-          # Create zip from temp directory
-          cd temp_zip
-          zip -r ../release-files/app.zip ./*
-          
-          # Clean up
-          cd ..
-          rm -rf temp_zip
+          # Move the zip to release-files
+          cd ../../..
+          mv app.zip release-files/
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
