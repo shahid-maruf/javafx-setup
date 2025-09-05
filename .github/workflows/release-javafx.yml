@@ -124,24 +124,17 @@ jobs:
             --runtime-image custom-runtime \
             --java-options "-Dfile.encoding=UTF-8"
 
-      - name: Create app.zip (excluding UpdaterTrackivo.jar)
-        run: |
-          cd target/app
-          # Create zip excluding UpdaterTrackivo.jar
-          zip -r ../app.zip ./* -x "UpdaterTrackivo.jar"
-          cd ../..
-
       - name: Upload OS-specific artifact
         uses: actions/upload-artifact@v4
         with:
           name: installers-${{ matrix.os }}
           path: target/jpackage/*
 
-      - name: Upload app.zip artifact
+      - name: Upload app files for zip creation
         uses: actions/upload-artifact@v4
         with:
-          name: app-portable-${{ matrix.os }}
-          path: target/app.zip
+          name: app-files-${{ matrix.os }}
+          path: target/app/
 
   release:
     runs-on: ubuntu-latest
@@ -156,10 +149,19 @@ jobs:
       - name: List downloaded installers
         run: ls -R release-files
 
+      - name: Create app.zip (excluding UpdaterTrackivo.jar)
+        run: |
+          # Find the app files (they might be in different subdirectories)
+          find release-files -name "main.jar" -exec dirname {} \; | head -1 | xargs -I {} sh -c '
+            cd "{}"
+            echo "Creating app.zip from: $(pwd)"
+            ls -la
+            zip -r ../../../app.zip ./* -x "UpdaterTrackivo.jar"
+          '
+          mv app.zip release-files/
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           draft: true
-          files: |
-            release-files/**/*
-            release-files/*/app.zip
+          files: release-files/**/*
