@@ -149,19 +149,57 @@ jobs:
       - name: List downloaded installers
         run: ls -R release-files
 
+      - name: Debug downloaded artifacts
+        run: |
+          echo "=== Current directory structure ==="
+          pwd
+          ls -la
+          echo "=== Release files content ==="
+          ls -la release-files/ || echo "release-files/ doesn't exist"
+          echo "=== All files recursively ==="
+          find . -name "*.jar" | head -10
+
       - name: Create app.zip (excluding UpdaterTrackivo.jar)
         run: |
-          # Find the first directory containing main.jar
-          APP_DIR=$(find release-files -name "main.jar" -exec dirname {} \; | head -1)
-          echo "Creating app.zip from: $APP_DIR"
+          # Check where the artifacts actually are
+          if [ -d "release-files" ]; then
+            echo "release-files exists, checking content:"
+            ls -la release-files/
+            # Try to find app files in subdirectories
+            APP_SUBDIR=$(find release-files -name "main.jar" -exec dirname {} \; | head -1)
+            if [ -n "$APP_SUBDIR" ]; then
+              echo "Found app files in: $APP_SUBDIR"
+              cd "$APP_SUBDIR"
+            else
+              echo "No main.jar found in release-files subdirectories"
+              exit 1
+            fi
+          else
+            echo "release-files directory doesn't exist, checking current dir:"
+            ls -la
+            # Maybe artifacts are in current directory
+            if [ -f "main.jar" ]; then
+              echo "Found main.jar in current directory"
+              cd .
+            else
+              echo "No app files found!"
+              exit 1
+            fi
+          fi
           
-          # Change to the app directory and create zip
-          cd "$APP_DIR"
-          zip -r ../../../app.zip ./* -x "UpdaterTrackivo.jar"
+          # Create zip excluding UpdaterTrackivo.jar
+          zip -r app.zip ./* -x "UpdaterTrackivo.jar"
           
-          # Move the zip to release-files
-          cd ../../..
-          mv app.zip release-files/
+          # Move zip to appropriate location
+          if [ -d "../../release-files" ]; then
+            mv app.zip ../../release-files/
+          elif [ -d "../release-files" ]; then
+            mv app.zip ../release-files/
+          else
+            # Create release-files directory if it doesn't exist
+            mkdir -p release-files
+            mv app.zip release-files/
+          fi
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
