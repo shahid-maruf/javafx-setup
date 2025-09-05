@@ -35,7 +35,7 @@ jobs:
           cp main.jar target/app/main.jar
           cp target/dependency/*.jar target/app/
           # Copy UpdaterTrackivo.jar to root directory
-          cp UpdaterTrackivo.jar target/
+          cp UpdaterTrackivo.jar target/app/
 
       # ---------------- WINDOWS ----------------
       - name: Create Custom Runtime (Windows)
