@@ -45,7 +45,7 @@ jobs:
           if exist custom-runtime rmdir /s /q custom-runtime
           jlink ^
             --module-path "%JAVA_HOME%\jmods;target\app;javafx-jmods" ^
-            --add-modules java.base,java.logging,java.net.http,javafx.controls,javafx.fxml,javafx.media,javafx.graphics,jdk.unsupported,jdk.crypto.ec ^
+            --add-modules java.base,java.logging,java.net.http,javafx.controls,javafx.fxml,javafx.media,javafx.graphics,jdk.unsupported,jdk.crypto.ec,javafx.web ^
             --output custom-runtime ^
             --strip-debug ^
             --compress 2 ^
@@ -81,7 +81,7 @@ jobs:
           rm -rf custom-runtime
           jlink \
             --module-path "$JAVA_HOME/jmods:target/app:javafx-jmods" \
-            --add-modules java.base,java.logging,java.net.http,javafx.controls,javafx.fxml,javafx.media,javafx.graphics,jdk.unsupported,jdk.crypto.ec \
+            --add-modules java.base,java.logging,java.net.http,javafx.controls,javafx.fxml,javafx.media,javafx.graphics,jdk.unsupported,jdk.crypto.ec,javafx.web \
             --output custom-runtime \
             --strip-debug \
             --compress 2 \
